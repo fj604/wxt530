@@ -63,12 +63,17 @@ if args.topic is not None:
     client.connect(args.mqtt)
     client.loop_start()
 
+print("Starting WXT530 logging")
+
 with serial.Serial(port, baudrate, timeout=timeout) as file:
     while True:
         try:
             line = file.readline().decode().strip()
         except UnicodeDecodeError:
             line = ""
+        except serial.SerialException:
+            print("Error reading from serial port, aborting")
+            raise
         elements = line.split('*')
         data = elements[0]
         try:
